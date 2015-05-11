@@ -1,0 +1,11 @@
+[
+    {
+      "model": "User",
+      "keys": ["username"],
+      "data": {
+        "username": "geoff",
+        "firstname": "geoff",
+        "password": "testpassword"
+      }
+    }
+  ]
