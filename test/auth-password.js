@@ -148,7 +148,7 @@ describe("Sequelize Auth Tests", function() {
 
 					requests.length.should.eql(3);
 					//remember we're on the third test now!!
-					requests[2].remoteAddress.should.eql('127.0.0.1');
+					requests[2].remoteAddress.should.eql(host);
 					requests[2].statusCode.should.eql(400);
 
 					(typeof requests[2].TokenId).should.eql('object');
@@ -201,7 +201,7 @@ describe("Sequelize Auth Tests", function() {
 
 					requests.length.should.eql(4);
 					//remember we're on the third test now!!
-					requests[3].remoteAddress.should.eql('127.0.0.1');
+					requests[3].remoteAddress.should.eql(host);
 					requests[3].statusCode.should.eql(401);
 
 					(typeof requests[3].TokenId).should.eql('object');
@@ -256,7 +256,7 @@ describe("Sequelize Auth Tests", function() {
 
 					requests.length.should.eql(5);
 					//remember we're on the third test now!!
-					requests[4].remoteAddress.should.eql('127.0.0.1');
+					requests[4].remoteAddress.should.eql(host);
 					requests[4].statusCode.should.eql(401);
 
 					(typeof requests[4].TokenId).should.eql('object');
@@ -312,7 +312,7 @@ describe("Sequelize Auth Tests", function() {
 
 					requests.length.should.eql(6);
 					//remember we're on the third test now!!
-					requests[5].remoteAddress.should.eql('127.0.0.1');
+					requests[5].remoteAddress.should.eql(host);
 					requests[5].statusCode.should.eql(401);
 
 					(typeof requests[5].TokenId).should.eql('object');
@@ -373,7 +373,7 @@ describe("Sequelize Auth Tests", function() {
 
 					requests.length.should.eql(7);
 					//remember we're on the third test now!!
-					requests[6].remoteAddress.should.eql('127.0.0.1');
+					requests[6].remoteAddress.should.eql(host);
 					requests[6].statusCode.should.eql(200);
 
 					(typeof requests[6].TokenId).should.eql('number');
