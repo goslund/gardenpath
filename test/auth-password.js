@@ -8,6 +8,7 @@ var request = require('request');
 describe("Sequelize Auth Tests", function() {
 	var host = config.host;
 	var port = config.port;
+	var url ='http://' + host + ':' + port + '/token';
 	var testUserName = "geoff";
 	var testPassword = "testpassword";
 	var clientId = "testclient";
@@ -32,10 +33,10 @@ describe("Sequelize Auth Tests", function() {
 	it("should log no client credentials", function(done) {
 
 		var promise = new Promise(function(resolve, reject) {
-			var url ='http://' + host + ':' + port + '/token';
-			console.log(url); 
+			
+			// console.log(url); 
 			request.post({
-				url: 'http://' + host + ':' + port + '/token'
+				url: url
 			}, function(err, res, body) {
 				// console.log('here');
 				// console.log(err);
@@ -80,7 +81,7 @@ describe("Sequelize Auth Tests", function() {
 	it("should log corrupted client credentials", function(done) {
 		var promise = new Promise(function(resolve, reject) {
 			request.post({
-				url: 'http://localhost:3080/token',
+				url: url,
 				headers: {
 					'Authorization': 'Basic test:test'
 				}
@@ -126,7 +127,7 @@ describe("Sequelize Auth Tests", function() {
 	it("should log correct client credentials", function(done) {
 		var promise = new Promise(function(resolve, reject) {
 			request.post({
-				url: 'http://localhost:3080/token',
+				url: url,
 				headers: {
 					'Authorization': 'Basic ' + basicAuthString
 				}
@@ -172,7 +173,7 @@ describe("Sequelize Auth Tests", function() {
 	it("should reject bad client credentials", function(done) {
 		var promise = new Promise(function(resolve, reject) {
 			request.post({
-				url: 'http://localhost:3080/token',
+				url: url,
 				headers: {
 					'Authorization': 'Basic ' + badAuthString
 				},
@@ -226,7 +227,7 @@ describe("Sequelize Auth Tests", function() {
 	it("should reject bad username credentials", function(done) {
 		var promise = new Promise(function(resolve, reject) {
 			request.post({
-				url: 'http://localhost:3080/token',
+				url: url,
 				headers: {
 					'Authorization': 'Basic ' + basicAuthString
 				},
@@ -282,7 +283,7 @@ describe("Sequelize Auth Tests", function() {
 	it("should reject bad password credentials", function(done) {
 		var promise = new Promise(function(resolve, reject) {
 			request.post({
-				url: 'http://localhost:3080/token',
+				url: url,
 				headers: {
 					'Authorization': 'Basic ' + basicAuthString
 				},
@@ -337,7 +338,7 @@ describe("Sequelize Auth Tests", function() {
 	it("should login successfully and generate a token", function(done) {
 		var promise = new Promise(function(resolve, reject) {
 			request.post({
-				url: 'http://localhost:3080/token',
+				url: url,
 				headers: {
 					'Authorization': 'Basic ' + basicAuthString
 				},
