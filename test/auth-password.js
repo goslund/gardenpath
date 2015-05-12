@@ -3,6 +3,8 @@ require(__dirname + '/../app.js');
 var should = require('chai').should();
 var http = require('http');
 var request = require('request');
+console.log(config.hostname);
+
 describe("Sequelize Auth Tests", function() {
 	var testUserName = "geoff";
 	var testPassword = "testpassword";
