@@ -1,0 +1,20 @@
+[{
+	"model": "Client",
+	"keys": ["name"],
+	"data": {
+		"name": "testclient",
+		"secret": "testsecret",
+		"redirectUri": "http://localhost:3000"
+	}
+
+},
+{
+	"model": "Client",
+	"keys": ["name"],
+	"data": {
+		"name": "stagingclient",
+		"secret": "stagingclient",
+		"redirectUri": "http://162.209.72.125:3000"
+	}
+
+}]

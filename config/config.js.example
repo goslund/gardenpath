@@ -1,0 +1,47 @@
+var path = require('path'),
+    rootPath = path.normalize(__dirname + '/..');
+
+var config = {
+  local: {
+    root: rootPath,
+    app: {
+      name: 'gardenpath-app'
+    },
+    port: 3080,
+    host: 'localhost',
+    forceSync: true,
+    db: 'mysql://user:password@localhost/gardenpath'
+  },
+  development: {
+    root: rootPath,
+    app: {
+      name: 'gardenpath-app'
+    },
+    port: 3080,
+    host: 'localhost', 
+    forceSync: false,
+    db: 'mysql://user:password@localhost/gardenpath'
+  },
+
+  staging: {
+    root: rootPath,
+    app: {
+      name: '012-generator-express'
+    },
+    port: 3080,
+    host: '162.209.72.125',
+    forceSync: false,
+    db: 'mysql://user:password@localhost/gardenpath'
+  },
+
+  production: {
+    root: rootPath,
+    app: {
+      name: '012-generator-express'
+    },
+    port: 3000,
+    db: 'mysql://user:password@localhost/gardenpath'
+  }
+};
+
+module.exports = config[env];
