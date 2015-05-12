@@ -9,8 +9,6 @@ var env       = process.env.NODE_ENV || 'development';
 var db        = {};
 var sequelize = new Sequelize(config.db);
 
-
-console.log(config);
 fs
   .readdirSync(__dirname)
   .filter(function(file) {
