@@ -4,20 +4,38 @@ path = require('path'),
   session = require('express-session'),
   oauth20 = require('../oauth20.js')(TYPE),
   server = express(),
-  router = express.Router(),
-  model = require('../models/' + TYPE),
+  // router = express.Router(),
   bodyParser = require('body-parser'),
   cookieParser = require('cookie-parser'),
+  model = require('../models/' + TYPE),
 
-
+  restful = require('sequelize-restful'),
   sequelize_fixtures = require('sequelize-fixtures');
 oauth20db = require('../app/models');
 
+server.use(bodyParser.json());
 
 var Acl = require('acl'),
   AclSeq = require('acl-sequelize');
+  
+var api=restful(oauth20db.sequelize, {});
+server.use(oauth20.inject());
+router = express.Router();
+require('../app/routes');
+server.use(api);
 
-
+  // server.all('/*', function(req, res, next) {
+  //   // CORS headers
+  //   res.header("Access-Control-Allow-Origin", "*"); // restrict it to the required domain
+  //   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  //   // Set custom headers for CORS
+  //   res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
+  //   if (req.method == 'OPTIONS') {
+  //     res.status(200).end();
+  //   } else {
+  //     next();
+  //   }
+  // });
 
 server.sync = function() {
   var promise = new Promise(function(resolve, reject) {
@@ -43,7 +61,7 @@ server.sync = function() {
 
         resolve();
         // console.log(acl);
-        
+
       })
     });
   });
@@ -78,12 +96,12 @@ server.use(session({
 server.use(bodyParser.urlencoded({
   extended: false
 }));
-server.use(bodyParser.json());
-server.use(oauth20.inject());
+
+
 
 // View
 server.set('views', './view');
 server.set('view engine', 'jade');
-require('../app/routes');
+
 // console.log(test);
 module.exports = server;

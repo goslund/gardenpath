@@ -3,12 +3,9 @@ TYPE = process.env.npm_config_type || 'sequelize';
 env = process.env.NODE_ENV || 'development';
 var
     query = require('querystring'),
-
-
     express = require('express');
 config = require('./config/config.js');
 server = require('./config/server');
-// server.use('/', require('../app/routes'));
 // Middleware. User authorization
 
 

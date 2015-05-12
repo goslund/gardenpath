@@ -5,8 +5,8 @@ module.exports.getId = function(client) {
 };
 
 module.exports.getRedirectUri = function(client) {
-	console.log("CLIENT!!", client);
-    // return client.redirectUri;
+	// console.log("CLIENT!!", client);
+    return client.redirectUri;
 };
 
 module.exports.fetchById = function(clientId, cb) {

@@ -1,22 +1,35 @@
 var crypto = require('crypto');
-    // accessTokens = require('./../../data.js').accessTokens;
+// accessTokens = require('./../../data.js').accessTokens;
 
 module.exports.getToken = function(accessToken) {
     return accessToken.token;
 };
 
 module.exports.create = function(userId, clientId, scope, ttl, cb) {
-    var token = crypto.randomBytes(64).toString('hex');
-    var obj = {token: token, userId: userId, clientId: clientId, scope: scope, ttl: new Date().getTime() + ttl * 1000};
+    var accessToken = crypto.randomBytes(64).toString('hex');
+
+    var obj = {
+        token: accessToken,
+        UserId: userId,
+        ClientId: clientId,
+        tokenType: 'bearer',
+        expires: new Date().getTime() + ttl * 1000
+    };
+
+    // console.log(obj);
+
+    var promise = oauth20db.AccessToken.create(obj);
+
+    promise.then(function(ret) {
+        return cb(null, accessToken);
+    })
+
+
     
-    cb(null, token);
 };
 
 module.exports.fetchByToken = function(token, cb) {
-    for (var i in accessTokens) {
-        if (accessTokens[i].token == token) return cb(null, accessTokens[i]);
-    }
-    cb();
+// console.log("here");
 };
 
 module.exports.checkTTL = function(accessToken) {

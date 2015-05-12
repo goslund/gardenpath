@@ -2,7 +2,7 @@ var oauth20 = require('oauth20-provider');
 
 // Define methods
 module.exports = function(type) {
-    var obj = new oauth20({log: {level: 4}});
+    var obj = new oauth20({log: {level: 8}});
 
     var model = require('./models/' + type).oauth2;
     if (!model)
