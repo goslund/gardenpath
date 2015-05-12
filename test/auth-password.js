@@ -102,7 +102,7 @@ describe("Sequelize Auth Tests", function() {
 
 					requests.length.should.eql(2);
 					//remember we're on the second test now!!
-					requests[1].remoteAddress.should.eql('127.0.0.1');
+					requests[1].remoteAddress.should.eql(host);
 					requests[1].statusCode.should.eql(400);
 
 					(typeof requests[1].TokenId).should.eql('object');
