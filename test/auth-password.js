@@ -55,7 +55,7 @@ describe("Sequelize Auth Tests", function() {
 				promise.then(function(requests) {
 
 					requests.length.should.eql(1);
-					requests[0].remoteAddress.should.eql('127.0.0.1');
+					requests[0].remoteAddress.should.eql(host);
 					requests[0].statusCode.should.eql(400);
 
 					(typeof requests[0].TokenId).should.eql('object');
