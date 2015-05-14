@@ -116,124 +116,36 @@ function scrapeClientInfo(req) {
         return promise;
     }
     // Define OAuth2 Authorization Endpoint
-server.get('/authorization', isUserAuthorized, oauth20.controller.authorization, function(req, res) {
+server.get('/authorization', isUserAuthorized, oauth2.controller.authorization, function(req, res) {
     res.render('authorization', {
         layout: false
     });
 });
-server.post('/authorization', isUserAuthorized, oauth20.controller.authorization);
+server.post('/authorization', isUserAuthorized, oauth2.controller.authorization);
 
 // Define OAuth2 Token Endpoint
-
-
-
-// server.post('/token', function(req, res, next) {
-//     console.log("here");
-//     // var controller = oauth20.controller.token(oauth20,);
-//     // console.log(controller);
-//     var reqIp = req.ip;
-//     var _end = res.end;
-//     var _this = this;
-//     // res.end();
-//     // console.log(next());
-//     res.end = function(result) {
-
-//         var user;
-//         var client;
-//         var messages = [];
-//         scrapeUserInfo(req).then(function(userRet) {
-
-//             user = userRet;
-//         }).then(function() {
-
-//             var scrapePromise = scrapeClientInfo(req).then(function(clientRet) {
-
-//                 client = clientRet;
-//             }).then(function() {
-//                 messages.push(user.message);
-//                 messages.push(client.message);
-
-//             }).then(function() {
-
-//                 var userId = null;
-//                 var clientId = null;
-//                 var myToken = null;
-
-
-//                 if (user.user !== null) {
-//                     userId = user.user.id;
-//                 }
-//                 if (client.client !== null) {
-//                     clientId = client.client.id;
-//                 }
-
-//                 //if there is a user and a client a token is granted
-//                 // console.log(userId);
-//                 var body = JSON.parse(result);
-//                 console.log("here!!");
-//                 var promise = new Promise(function(resolve, reject) {
-
-//                     if (userId !== null && clientId !== null) {
-
-//                         oauth20db.UserToken.create({
-//                             refreshToken: body.refresh_token,
-//                             accessToken: body.access_token,
-//                             expiresIn: body.expires,
-//                             tokenType: 'bearer',
-//                             TokenRequestId: null
-//                         }).then(function(userToken) {
-//                             // console.log(userToken);
-//                             resolve(userToken);
-//                         }, function(err) {
-//                             // console.log(err);
-//                         });
-//                     } else {
-//                         resolve({
-//                             id: null
-//                         });
-//                     }
-//                 });
-
-//                 promise.then(function(token) {
-//                     console.log(token);
-//                     oauth20db.TokenRequest.create({
-//                         statusCode: res.statusCode,
-//                         remoteAddress: reqIp,
-//                         UserId: userId,
-//                         ClientId: clientId,
-//                         TokenId: token.id,
-//                         messages: JSON.stringify(messages)
-//                     }).then(function(data) {
-//                         var string = JSON.stringify(result);
-//                         console.log(typeof result);
-//                         _end()             
-//                         // next();
-
-//                     });
-//                 });
-//             });
-//         });
-//     };
-//     next();
-// });
-
 server.post('/token', function(req, res, next) {
     var _send = res.send;
-    console.log(req.body.username);
+    req.oauth2 = oauth2;
 
 
 
     res.send = function(result) {
-        console.log(result);
+
         var defers = 2;
         var _this = this;
         var userId = null;
+        var clientId = null;
+        var accessTokenId = null;
+        var refreshTokenId = null;
         var promises = [];
+        var accessTokenId = null;
+        var refreshTokenId = null;
 
         promises.push(
             scrapeUserInfo(req).then(function(user) {
                 if (user) {
-                    return user.user.id;
+                    userId = user.user.id
                 }
                 return null;
             })
@@ -242,18 +154,60 @@ server.post('/token', function(req, res, next) {
         promises.push(
             scrapeClientInfo(req).then(function(client) {
                 if (client) {
-                    return client.client.id;
+                    clientId = client.client.id;
                 }
                 return null;
 
             })
         );
 
+        //if user and client passed their respective things, a token was generated in the response
+
+
         Promise.all(promises).then(function(data) {
-            console.log("data", data);
+            var next_promises = [];
+            var resultJSON = result;
+
+            if (typeof result === 'string') {
+                resultJSON = JSON.parse(result);
+            };
+
+
+            // console.log("res", JSON.parse(result));
+            if (userId !== null && clientId !== null) {
+                next_promises.push(
+                    oauth20db.AccessToken.find({
+                        where: {
+                            token: resultJSON.access_token
+                        }
+                    }).then(function(accessToken) {
+                        console.log(accessToken.id);
+                        accessTokenId = accessToken.id;
+                    }));
+
+                next_promises.push(
+                    oauth20db.RefreshToken.find({
+                        where: {
+                            token: resultJSON.refresh_token
+                        }
+                    }).then(function(refreshToken) {
+                        refreshTokenId = refreshToken.id;
+                    }))
+            }
+
+            return Promise.all(next_promises);
+
 
             //do more stuff
         }).then(function() {
+            var obj = {
+                AccessTokenId: accessTokenId,
+                refreshTokenId: refreshTokenId,
+                UserId: userId,
+                ClientId: clientId,
+            }
+            console.log(obj);
+            // oauth20db.TokenRequest
             _send.call(_this, result);
         });
         // user.then(function(data) {
@@ -265,7 +219,7 @@ server.post('/token', function(req, res, next) {
 
 
         // }).then(function() {
-        
+
         // })
 
 
@@ -273,7 +227,7 @@ server.post('/token', function(req, res, next) {
     next();
 })
 
-server.use('/token', oauth20.controller.token);
+server.use('/token', oauth2.controller.token);
 
 
 // Define user login routes
@@ -318,13 +272,13 @@ server.post('/login', function(req, res, next) {
     else res.redirect(req.url);
 });
 // Some secure method
-server.get('/secure', oauth20.middleware.bearer, function(req, res) {
+server.get('/secure', oauth2.middleware.bearer, function(req, res) {
     if (!req.oauth2.accessToken) return res.status(403).send('Forbidden');
     if (!req.oauth2.accessToken.userId) return res.status(403).send('Forbidden');
     res.send('Hi! Dear user ' + req.oauth2.accessToken.userId + '!');
 });
 // Some secure client method
-server.get('/client', oauth20.middleware.bearer, function(req, res) {
+server.get('/client', oauth2.middleware.bearer, function(req, res) {
     if (!req.oauth2.accessToken) return res.status(403).send('Forbidden');
     res.send('Hi! Dear client ' + req.oauth2.accessToken.clientId + '!');
 });

@@ -72,8 +72,8 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      files: ['app.js'],
-      tasks: ['jshint', 'qunit']
+      files: ['app.js']
+      // tasks: ['jshint', 'qunit']
     }
   });
 

@@ -28,7 +28,7 @@ module.exports = function(sequelize, DataTypes) {
 		// }
 	}, {
 		associate: function(models) {
-			UserToken.hasOne(models.TokenRequest, {as: "TokenRequest", foreignKey: "TokenRequestId"});
+			UserToken.belongsTo(models.TokenRequest, {as: "TokenRequest", foreignKey: "TokenRequestId"});
 		},
 		instanceMethods: {
 		}

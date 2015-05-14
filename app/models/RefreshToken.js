@@ -5,18 +5,15 @@
 var bcrypt = require('bcrypt');
 
 module.exports = function(sequelize, DataTypes) {
-  var AccessToken = sequelize.define("AccessToken", {
+  var RefreshToken = sequelize.define("RefreshToken", {
     token: {
       type: DataTypes.STRING,
       unique: true
-    },
-    ttl: {
-      type: DataTypes.DATE
     }
   }, {
     associate: function(models) {
-      AccessToken.belongsTo(models.User, {as: "User", foreignKey: "UserId"});
-      AccessToken.belongsTo(models.Client, {as: "Client", foreignKey: "ClientId"});
+      RefreshToken.belongsTo(models.User, {as: "User", foreignKey: "UserId"});
+      RefreshToken.belongsTo(models.Client, {as: "Client", foreignKey: "ClientId"});
     },
     instanceMethods: {
       verifyPassword: function(password, done) {
@@ -27,5 +24,5 @@ module.exports = function(sequelize, DataTypes) {
 
 
 
-  return AccessToken;
+  return RefreshToken;
 };

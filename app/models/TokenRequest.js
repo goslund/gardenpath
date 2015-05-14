@@ -22,6 +22,8 @@ module.exports = function(sequelize, DataTypes) {
 	}, {
 		associate: function(models) {
 			// TokenRequest.belongsTo(models.UserToken, {as: "Token", foreignKey: 'TokenId'});
+			TokenRequest.belongsTo(models.AccessToken, {as:"AccessToken", foreignKey: "AccessTokenId"});
+			TokenRequest.belongsTo(models.RefreshToken, {as:"RefreshToken", foreignKey: "RefreshTokenId"});
 			TokenRequest.belongsTo(models.User, {as: "User", foreignKey: 'UserId'});
 			TokenRequest.belongsTo(models.Client, {as: "Client", foreignKey: 'ClientId'});
 		},

@@ -2,7 +2,7 @@ path = require('path'),
   rootPath = path.normalize(__dirname + '/..'),
   express = require('express'),
   session = require('express-session'),
-  oauth20 = require('../oauth20.js')(TYPE),
+  oauth2 = require('../oauth20.js')(TYPE),
   server = express(),
   // router = express.Router(),
   bodyParser = require('body-parser'),
@@ -12,30 +12,34 @@ path = require('path'),
   restful = require('sequelize-restful'),
   sequelize_fixtures = require('sequelize-fixtures');
 oauth20db = require('../app/models');
-
+Acl = require('acl');
+AclSeq = require('acl-sequelize');
+acl = new Acl(new AclSeq(oauth20db.sequelize, {prefix: 'acl_'}));
 server.use(bodyParser.json());
-
-var Acl = require('acl'),
-  AclSeq = require('acl-sequelize');
-  
-var api=restful(oauth20db.sequelize, {});
-server.use(oauth20.inject());
-router = express.Router();
 require('../app/routes');
+
+var api=restful(oauth20db.sequelize, {
+  allowed: new Array('Users')
+});
 server.use(api);
 
-  // server.all('/*', function(req, res, next) {
-  //   // CORS headers
-  //   res.header("Access-Control-Allow-Origin", "*"); // restrict it to the required domain
-  //   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  //   // Set custom headers for CORS
-  //   res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
-  //   if (req.method == 'OPTIONS') {
-  //     res.status(200).end();
-  //   } else {
-  //     next();
-  //   }
-  // });
+
+  
+server.use(oauth2.inject());
+router = express.Router();
+
+  server.all('/*', function(req, res, next) {
+    // CORS headers
+    res.header("Access-Control-Allow-Origin", "*"); // restrict it to the required domain
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    // Set custom headers for CORS
+    res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
+    if (req.method == 'OPTIONS') {
+      res.status(200).end();
+    } else {
+      next();
+    }
+  });
 
 server.sync = function() {
   var promise = new Promise(function(resolve, reject) {
@@ -48,7 +52,7 @@ server.sync = function() {
   promise = promise.then(function() {
 
     return new Promise(function(resolve, reject) {
-      console.log(config.forceSync);
+      // console.log(config.forceSync);
       var q = oauth20db.sequelize.sync({
 
         force: config.forceSync
@@ -78,7 +82,7 @@ server.sync = function() {
   return promise;
 }
 
-server.set('oauth2', oauth20);
+server.set('oauth2', oauth2);
 
 // console.log(server);
 // server.set('oauth2', oauth20);
@@ -88,11 +92,11 @@ server.set('oauth2', oauth20);
 // Middleware
 
 server.use(cookieParser());
-server.use(session({
-  secret: 'oauth20-provider-test-server',
-  resave: false,
-  saveUninitialized: false
-}));
+// server.use(session({
+//   secret: 'oauth20-provider-test-server',
+//   resave: false,
+//   saveUninitialized: false
+// }));
 server.use(bodyParser.urlencoded({
   extended: false
 }));

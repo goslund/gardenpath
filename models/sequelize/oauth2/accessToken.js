@@ -2,7 +2,8 @@ var crypto = require('crypto');
 // accessTokens = require('./../../data.js').accessTokens;
 
 module.exports.getToken = function(accessToken) {
-    return accessToken.token;
+    
+    return accessToken.id;
 };
 
 module.exports.create = function(userId, clientId, scope, ttl, cb) {
@@ -12,8 +13,8 @@ module.exports.create = function(userId, clientId, scope, ttl, cb) {
         token: accessToken,
         UserId: userId,
         ClientId: clientId,
-        tokenType: 'bearer',
-        expires: new Date().getTime() + ttl * 1000
+        // tokenType: 'bearer',
+        ttl: new Date().getTime() + ttl * 1000
     };
 
     // console.log(obj);
@@ -29,10 +30,23 @@ module.exports.create = function(userId, clientId, scope, ttl, cb) {
 };
 
 module.exports.fetchByToken = function(token, cb) {
-// console.log("here");
+    var promise = oauth20db.AccessToken.findOne({where: {
+        token: token
+    }});
+
+    promise.then(function(ret) {
+        // console.log(ret);
+        if(ret) {
+            return cb(null, ret);        
+        }
+        return cb();
+        
+    })
+    
 };
 
 module.exports.checkTTL = function(accessToken) {
+    console.log(accessToken.ttl);
     return (accessToken.ttl > new Date().getTime());
 };
 

@@ -6,14 +6,15 @@ module.exports.getToken = function(accessToken) {
 };
 
 module.exports.create = function(userId, clientId, scope, ttl, cb) {
-    var accessToken = crypto.randomBytes(64).toString('hex');
-    var refreshToken = crypto.randomBytes(64).toString('hex');
+    
     var obj = {token: token, userId: userId, clientId: clientId, scope: scope, ttl: new Date().getTime() + ttl * 1000};
     accessTokens.push(obj);
     cb(null, token);
 };
 
 module.exports.fetchByToken = function(token, cb) {
+
+    console.log("Token: ", token);
     for (var i in accessTokens) {
         if (accessTokens[i].token == token) return cb(null, accessTokens[i]);
     }

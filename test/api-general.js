@@ -29,53 +29,54 @@ describe("Sequelize Auth Tests", function() {
 	before(function(done) {
 		this.timeout(20000);
 		// console.log(server.sync);
-		server.sync().then(function() {
+		// server.sync().then(function() {
+		// 	done();
+		// });
+		done();
+	});
+
+	it("should deny request without token", function(done) {
+		var promise = new Promise(function(resolve, reject) {
+			request.get({
+				url: url + '/api'
+			}, function(err, res, body) {
+				// console.log(err);
+				var json = JSON.parse(body);
+				// console.log(json);
+				// console.log(res.statusCode);
+				res.statusCode.should.eql(403);
+				json.error.should.equal('access_denied');
+				json.error_description.should.eql('Bearer token not found');
+				resolve();
+			});
+		});
+		promise.then(function() {
 			done();
 		});
 	});
 
-	// it("should deny request without token", function(done) {
-	// 	var promise = new Promise(function(resolve, reject) {
-	// 		request.get({
-	// 			url: url + '/api'
-	// 		}, function(err, res, body) {
-	// 			// console.log(err);
-	// 			var json = JSON.parse(body);
-	// 			// console.log(json);
-	// 			// console.log(res.statusCode);
-	// 			res.statusCode.should.eql(403);
-	// 			json.error.should.equal('access_denied');
-	// 			json.error_description.should.eql('Bearer token not found');
-	// 			resolve();
-	// 		});
-	// 	});
-	// 	promise.then(function() {
-	// 		done();
-	// 	});
-	// });
+	it("should deny request with bad token", function(done) {
+		var promise = new Promise(function(resolve, reject) {
+			request.get({
+				url: url + '/api',
+				headers: {
+					'Authorization': 'Bearer ' + "sometoken"
+				}
+			}, function(err, res, body) {
+				var json = JSON.parse(body);
+				// console.log(json);
+				// console.log(res.statusCode);
+				res.statusCode.should.eql(403);
+				json.error.should.equal('forbidden');
+				json.error_description.should.eql('Token not found or expired');
+				resolve();
+			});
+		});
 
-	// it("should deny request with bad token", function(done) {
-	// 	var promise = new Promise(function(resolve, reject) {
-	// 		request.get({
-	// 			url: url + '/api',
-	// 			headers: {
-	// 				'Authorization': 'Bearer ' + "sometoken"
-	// 			}
-	// 		}, function(err, res, body) {
-	// 			// console.log(err);
-	// 			var json = JSON.parse(body);
-	// 			// console.log(json);
-	// 			// console.log(res.statusCode);
-	// 			res.statusCode.should.eql(403);
-	// 			json.error.should.equal('forbidden');
-	// 			json.error_description.should.eql('Token not found or expired');
-	// 			resolve();
-	// 		});
-	// 	});
-	// 	promise.then(function() {
-	// 		done();
-	// 	});
-	// });
+		promise.then(function() {
+			done();
+		});
+	});
 
 	it("should login successfully and generate a token", function(done) {
 		var promise = new Promise(function(resolve, reject) {
@@ -116,65 +117,49 @@ describe("Sequelize Auth Tests", function() {
 		})
 	});
 
-	// it("should login successfully and generate a token", function(done) {
-	// 	var promise = new Promise(function(resolve, reject) {
-	// 		request.post({
-	// 			url: 'http://' + clientHost + ':' + clientPort + '/token',
-	// 			headers: {
-	// 				'Authorization': 'Basic ' + basicAuthString
-	// 			},
-	// 			form: {
-	// 				grant_type: 'password',
-	// 				username: testUserName,
-	// 				password: testPassword,
-	// 				format: 'json'
-	// 			}
-	// 		}, function(err, res, body) {
-	// 			console.log(err);
-	// 			var json = JSON.parse(body);
-	// 			res.statusCode.should.eql(200);
 
-	// 			(typeof json.refresh_token).should.eql('string');
-	// 			refreshToken = json.refresh_token;
 
-	// 			(typeof json.access_token).should.eql('string');
-	// 			accessToken = json.access_token;
+	it("should make the api request successfully", function(done) {
+		var promise = new Promise(function(resolve, reject) {
 
-	// 			json.token_type.should.eql('bearer');
 
-	// 			(typeof json.expires_in).should.eql('number');
-	// 			json.expires_in.should.eql(3600);
-	// 			resolve();
-	// 		});
-	// 	});
+			request.get({
+				url: url + '/api',
+				headers: {
+					'Authorization': 'Bearer ' + accessToken
+				},
+				json: {
+					format: 'json'
+				}
+			}, function(err, res, body) {
+				// console.log(body);
+				resolve();
+			});
+		});
+		promise.then(function() {
+			done();
+		});
+	});
 
-	// 	promise.then(function() {
-	// 		done();
-	// 	})
-	// });
+	it("should make the Users request successfully", function(done) {
+		var promise = new Promise(function(resolve, reject) {
 
-	// it("should make a request successfully", function(done) {
-	// 	var promise = new Promise(function(resolve, reject) {
-	// 		console.log(accessToken);
-	// 		request.get({
-	// 			url: url + '/api',
-	// 			headers: {
-	// 				'Authorization': 'Bearer ' + accessToken
-	// 			}
-	// 		}, function(err, res, body) {
-	// 			// console.log(err);
-	// 			var json = JSON.parse(body);
-	// 			// console.log(json);
-	// 			// console.log(res.statusCode);
-	// 			res.statusCode.should.eql(403);
-	// 			json.error.should.equal('forbidden');
-	// 			json.error_description.should.eql('Token not found or expired');
-	// 			resolve();
-	// 		});
-	// 	});
 
-	// 	promise.then(function() {
-	// 		done();
-	// 	});
-	// });
+			request.get({
+				url: url + '/api/Users',
+				headers: {
+					'Authorization': 'Bearer ' + accessToken
+				},
+				json: {
+					format: 'json'
+				}
+			}, function(err, res, body) {
+				console.log(body);
+				resolve();
+			});
+		});
+		promise.then(function() {
+			done();
+		});
+	});
 });
